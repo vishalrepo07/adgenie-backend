@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database import Base
+from sqlalchemy.dialects.mysql import LONGTEXT
 
 class User(Base):
     __tablename__ = "users"
@@ -46,7 +47,7 @@ class AdVariant(Base):
     hashtags = Column(Text, nullable=True)   # store as comma-separated string
     score = Column(Integer, nullable=True)
     tips = Column(Text, nullable=True)       # store as comma-separated string
-    image_url = Column(Text, nullable=True)
+    image_url = Column(LONGTEXT, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     campaign = relationship("Campaign", back_populates="ad_variants")
