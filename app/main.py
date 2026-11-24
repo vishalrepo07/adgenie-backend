@@ -1,3 +1,8 @@
+from dotenv import load_dotenv
+load_dotenv()
+
+from concurrent.futures import ThreadPoolExecutor
+
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
@@ -49,9 +54,13 @@ def generate_campaign(data: CampaignInput, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_campaign)
 
-    for v in variants_raw:
-        image_url = generate_ad_image(v["headline"], data.product_description)
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        image_urls = list(pool.map(
+            lambda v: generate_ad_image(v["headline"], data.product_description),
+            variants_raw,
+        ))
 
+    for v, image_url in zip(variants_raw, image_urls):
         ad_variant = AdVariant(
             campaign_id=new_campaign.id,
             angle=v["angle"],
