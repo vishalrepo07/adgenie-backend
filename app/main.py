@@ -13,6 +13,7 @@ from app.services.ai_campaign_generator import generate_ai_campaign
 from app.services.ai_image_generator import generate_ad_image
 from app.models import Campaign, AdVariant
 from app import auth
+from app import history
 
 Base.metadata.create_all(bind=engine)
 
@@ -32,6 +33,7 @@ app.add_middleware(
 )
 
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
+app.include_router(history.router)
 
 
 @app.get("/")
